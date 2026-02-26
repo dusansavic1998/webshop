@@ -1,22 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/lib/theme/ThemeContext';
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
+interface Company {
+  name: string;
+  logoUrl?: string;
+  description?: string;
 }
 
-export default function Header({ onSearch }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+interface HeaderProps {
+  company?: Company | null;
+}
+
+export default function Header({ company }: HeaderProps) {
   const { cartCount, setIsCartOpen } = useCart();
   const { theme, toggleTheme } = useTheme();
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (onSearch) onSearch(searchQuery);
-  };
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 border-b transition-colors duration-300 ${
@@ -26,14 +26,22 @@ export default function Header({ onSearch }: HeaderProps) {
     }`}>
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-18 py-4">
-          {/* Logo */}
+          {/* Logo with company image */}
           <a href="/" className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-[#0e7c86] to-[#14a3ad] rounded-xl flex items-center justify-center shadow-md">
-              <span className="text-white font-bold text-lg">A</span>
-            </div>
+            {company?.logoUrl ? (
+              <img 
+                src={company.logoUrl} 
+                alt={company.name} 
+                className="w-11 h-11 rounded-xl object-contain bg-white p-1 shadow-md"
+              />
+            ) : (
+              <div className="w-11 h-11 bg-gradient-to-br from-[#0e7c86] to-[#14a3ad] rounded-xl flex items-center justify-center shadow-md">
+                <span className="text-white font-bold text-lg">A</span>
+              </div>
+            )}
             <div>
               <span className="text-xl font-bold" style={{ color: theme === 'dark' ? '#fff' : '#1a2a33' }}>
-                Apetitio
+                {company?.name || 'Apetitio'}
               </span>
               <p className="text-xs" style={{ color: theme === 'dark' ? '#64748b' : '#64748b' }}>
                 Online trgovina

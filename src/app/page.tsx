@@ -11,6 +11,49 @@ import Footer from '@/components/Footer';
 import { syncApetitioData, Article, Category, Company } from '@/lib/api/apetitio-service';
 import { useTheme } from '@/lib/theme/ThemeContext';
 
+// External image search based on product name
+const getProductImage = (name: string): string => {
+  const searchTerms = name.toLowerCase().split(' ').slice(0, 2).join(' ');
+  
+  // Map common products to relevant images
+  const imageMap: Record<string, string> = {
+    'brašno': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=400&fit=crop',
+    'ulje': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400&h=400&fit=crop',
+    'so': 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442c?w=400&h=400&fit=crop',
+    'šećer': 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400&h=400&fit=crop',
+    'kafa': 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
+    'čaj': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&h=400&fit=crop',
+    'voda': 'https://images.unsplash.com/photo-1548839140-29a749e1cf4d?w=400&h=400&fit=crop',
+    'sok': 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&h=400&fit=crop',
+    'mlijeko': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&h=400&fit=crop',
+    'sir': 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400&h=400&fit=crop',
+    'jogurt': 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&h=400&fit=crop',
+    'kruh': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=400&fit=crop',
+    'voće': 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=400&fit=crop',
+    'povrće': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400&h=400&fit=crop',
+    'meso': 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=400&fit=crop',
+    'riba': 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400&h=400&fit=crop',
+    'čokolada': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=400&h=400&fit=crop',
+    'bombone': 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=400&h=400&fit=crop',
+    'keks': 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&h=400&fit=crop',
+    'čips': 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?w=400&h=400&fit=crop',
+    'pivo': 'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&h=400&fit=crop',
+    'vino': 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=400&fit=crop',
+    'higijena': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop',
+    'sapun': 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=400&h=400&fit=crop',
+  };
+
+  // Check if any key matches
+  for (const [key, url] of Object.entries(imageMap)) {
+    if (searchTerms.includes(key)) {
+      return url;
+    }
+  }
+
+  // Default food image
+  return 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop';
+};
+
 function ProductsSection() {
   const { theme } = useTheme();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -127,13 +170,13 @@ function ProductsSection() {
         {/* Product Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
           {filteredArticles.slice(0, 20).map((product) => {
-            const image = product.image || 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=400&h=400&fit=crop';
-            const price = product.price || 9.99;
+            const image = getProductImage(product.name);
+            const price = product.price || (Math.random() * 10 + 0.99);
             
             return (
               <div
                 key={product.id}
-                onClick={() => setSelectedProduct(product)}
+                onClick={() => setSelectedProduct({ ...product, image, price })}
                 className={`group rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl ${
                   theme === 'dark' 
                     ? 'bg-[#1a1a1a] hover:bg-[#252525]' 
@@ -193,11 +236,25 @@ function ProductsSection() {
 }
 
 function ShopContent() {
+  const [company, setCompany] = useState<Company | null>(null);
+  const [articleCount, setArticleCount] = useState(0);
+  const [categoryCount, setCategoryCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
+    const loadData = async () => {
+      try {
+        const data = await syncApetitioData();
+        setCompany(data.company);
+        setArticleCount(data.articles.length);
+        setCategoryCount(data.categories.length);
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
   }, []);
 
   if (isLoading) {
@@ -213,9 +270,9 @@ function ShopContent() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a] transition-colors duration-300">
-      <Header />
+      <Header company={company} />
       <main>
-        <Hero />
+        <Hero company={company} articleCount={articleCount} categoryCount={categoryCount} />
         <ProductsSection />
       </main>
       <Footer />
