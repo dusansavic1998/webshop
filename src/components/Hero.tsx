@@ -1,86 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSync, useCompany } from '@/lib/api/SyncContext';
+import { Company } from '@/lib/api/apetitio-service';
 
-export default function Hero() {
-  const { company, isSynced, isSyncing, syncData, lastSync } = useSync();
+interface HeroProps {
+  company?: Company | null;
+  articleCount?: number;
+  categoryCount?: number;
+}
+
+export default function Hero({ company, articleCount = 0, categoryCount = 0 }: HeroProps) {
   const [activeSlide, setActiveSlide] = useState(0);
 
-  // If not synced, show sync prompt
-  if (!isSynced) {
-    return (
-      <section className="relative h-[85vh] min-h-[600px] mt-16 md:mt-20 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
-        <div className="text-center px-4">
-          <div className="w-24 h-24 bg-[#e94560] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#e94560]/30">
-            <span className="text-white font-bold text-4xl">B</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
-            Dobrodošli u BePro
-          </h1>
-          
-          <p className="text-xl text-gray-300 mb-8 max-w-lg mx-auto">
-            Da biste započeli, potrebno je sinkronizirati podatke sa vašim poslovnim sistemom.
-          </p>
-
-          <button
-            onClick={syncData}
-            disabled={isSyncing}
-            className={`px-8 py-4 font-semibold rounded-full transition-all transform hover:scale-105 ${
-              isSyncing
-                ? 'bg-gray-500 cursor-not-allowed'
-                : 'bg-[#e94560] hover:bg-[#d63d56] shadow-lg shadow-[#e94560]/30'
-            } text-white`}
-          >
-            {isSyncing ? (
-              <span className="flex items-center gap-3">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Sinkronizacija u toku...
-              </span>
-            ) : (
-              '🔄 Započni sinkronizaciju'
-            )}
-          </button>
-
-          <p className="text-gray-400 text-sm mt-4">
-            Podaci će biti preuzeti sa vašeg InfosAPI sistema
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  const companyName = company?.name || 'BePro';
-  const companyDesc = company?.description || 'Betonski proizvodi vrhunskog kvaliteta';
+  const companyName = company?.name || 'Apetitio';
+  const companyDesc = company?.description || 'Vaš pouzdan partner za svakodnevne namirnice';
 
   const slides = [
     {
       id: 1,
-      badge: lastSync ? `Zadnja sinkronizacija: ${new Date(lastSync).toLocaleDateString('bs-BA')}` : 'Više od 38 godina iskustva',
-      title: `${companyName} - Betonski proizvodi`,
+      badge: 'Vaša trgovina',
+      title: companyName,
       description: companyDesc,
       cta: 'Pogledaj ponudu',
       ctaSecondary: 'Kontaktirajte nas',
     },
     {
       id: 2,
-      badge: 'Novo u ponudi',
-      title: 'Uređenje Dvorišta i Okoline',
-      description: 'Od betonskih ploča do kocki, fontana i vrtnog mobilijara - sve na jednom mjestu.',
+      badge: 'Svježe proizvodi',
+      title: 'Svježe voće i povrće',
+      description: 'Najkvalitetnije voće i povrće iz lokalnih izvora.',
       cta: 'Saznajte više',
-      ctaSecondary: 'Katalozi',
+      ctaSecondary: 'Naša ponuda',
     },
     {
       id: 3,
-      badge: 'Ekološki prihvatljivo',
-      title: 'Prirodna Rješenja za Vaš Prostor',
-      description: 'Fokusirani smo na funkcionalna, estetski usklađena i ekološki prihvatljiva rješenja.',
-      cta: 'Naši proizvodi',
-      ctaSecondary: 'Reference',
+      badge: 'Akcije',
+      title: 'Posebne ponude',
+      description: 'Pratite naše akcije i uštedite na svakodnevnim kupovinama.',
+      cta: 'Pogledaj akcije',
+      ctaSecondary: 'Sve akcije',
     },
   ];
 
@@ -96,7 +54,7 @@ export default function Hero() {
   return (
     <section className="relative h-[85vh] min-h-[600px] mt-16 md:mt-20 overflow-hidden">
       {/* Background */}
-      <div className="absolute inset-0 bg-[#1a1a2e]">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a2e] via-[#1a1a2e]/95 to-[#1a1a2e]/80 z-10" />
       </div>
 
@@ -107,12 +65,16 @@ export default function Hero() {
           <div className="text-white space-y-8">
             {/* Logo & Badge */}
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#e94560] to-[#ff6b6b] rounded-2xl flex items-center justify-center shadow-lg shadow-[#e94560]/30">
-                <span className="text-white font-bold text-2xl">B</span>
-              </div>
+              {company?.logoUrl ? (
+                <img src={company.logoUrl} alt={companyName} className="w-16 h-16 rounded-xl object-contain bg-white p-1" />
+              ) : (
+                <div className="w-16 h-16 bg-gradient-to-br from-[#e94560] to-[#ff6b6b] rounded-2xl flex items-center justify-center shadow-lg shadow-[#e94560]/30">
+                  <span className="text-white font-bold text-2xl">A</span>
+                </div>
+              )}
               <div>
                 <span className="text-2xl font-bold">{companyName}</span>
-                <p className="text-gray-400 text-sm">Betonski proizvodi</p>
+                <p className="text-gray-400 text-sm">Trgovina</p>
               </div>
             </div>
 
@@ -142,15 +104,20 @@ export default function Hero() {
               </button>
             </div>
 
-            {/* Sync Status */}
-            <div className="flex items-center gap-4 pt-2">
-              <span className="text-green-400 text-sm">✓ Podaci sinkronizirani</span>
-              <button 
-                onClick={syncData}
-                className="text-gray-400 hover:text-white text-sm underline"
-              >
-                Osvježi
-              </button>
+            {/* Stats */}
+            <div className="flex gap-8 pt-4">
+              <div>
+                <div className="text-3xl font-bold text-[#e94560]">{articleCount}</div>
+                <div className="text-gray-400 text-sm">Proizvoda</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-[#e94560]">{categoryCount}</div>
+                <div className="text-gray-400 text-sm">Kategorije</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-[#e94560]">2026</div>
+                <div className="text-gray-400 text-sm">Godina</div>
+              </div>
             </div>
           </div>
 
@@ -163,9 +130,9 @@ export default function Hero() {
               <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
                 <div className="space-y-6">
                   {[
-                    { icon: '📦', title: 'Proizvodi', desc: `${useArticles?.()?.length || 0} artikala` },
-                    { icon: '📂', title: 'Kategorije', desc: `${useCategories?.()?.length || 0} grupa` },
-                    { icon: '🏢', title: 'Kompanija', desc: companyName },
+                    { icon: '🥐', title: 'Prehrambeni', desc: 'Svježe namirnice' },
+                    { icon: '🍷', title: 'Pića', desc: 'Alkoholna i bezalkoholna' },
+                    { icon: '🧴', title: 'Higijena', desc: 'Kućna i lična' },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-[#e94560]/20 rounded-xl flex items-center justify-center text-2xl">
@@ -198,15 +165,4 @@ export default function Hero() {
       </div>
     </section>
   );
-}
-
-// Custom hooks for use in component
-function useArticles() {
-  const { articles } = useSync();
-  return articles;
-}
-
-function useCategories() {
-  const { categories } = useSync();
-  return categories;
 }
