@@ -5,7 +5,8 @@ import { CartProvider } from '@/context/CartContext';
 import { ThemeProvider } from '@/lib/theme/ThemeContext';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
-import CategoryShowcase from '@/components/CategoryShowcase';
+import CategoryList from '@/components/CategoryList';
+import SearchSection from '@/components/SearchSection';
 import ProductGrid from '@/components/ProductGrid';
 import ProductDetail from '@/components/ProductDetail';
 import Cart from '@/components/Cart';
@@ -46,7 +47,7 @@ function ShopContent() {
     })).filter(c => c.articleCount > 0);
   }, [categories, articles]);
 
-  // Filter articles by category
+  // Filter articles by category and search
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
       const matchesCategory = activeCategory === 'all' || article.category === activeCategory;
@@ -76,10 +77,15 @@ function ShopContent() {
       <Header onSearch={handleSearch} />
       <main>
         <Hero />
-        <CategoryShowcase 
+        <CategoryList 
           categories={categoriesWithCount}
           activeCategory={activeCategory}
           onCategoryChange={setActiveCategory}
+        />
+        <SearchSection 
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          resultCount={filteredArticles.length}
         />
         <ProductGrid 
           products={filteredArticles.map(a => ({
