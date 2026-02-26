@@ -27,7 +27,7 @@ export default function Hero({ company, articleCount = 0, categoryCount = 0 }: H
   const companyDesc = company?.description || 'Vaša pouzdana trgovina sa najboljim proizvodima';
 
   return (
-    <section className="relative min-h-[70vh] mt-16 overflow-hidden bg-gradient-to-br from-[#0e7c86] via-[#0a5d65] to-[#2c3e50]">
+    <section className="relative min-h-[70vh] mt-[72px] overflow-hidden bg-gradient-to-br from-[#0e7c86] via-[#0a5d65] to-[#2c3e50]">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="w-full h-full" style={{
