@@ -1,14 +1,16 @@
 'use client';
 
-import { Product } from '@/data/products';
+import { useState } from 'react';
 import ProductCard from './ProductCard';
 
 interface ProductGridProps {
-  products: Product[];
-  onProductClick: (product: Product) => void;
+  products: any[];
+  onProductClick?: (product: any) => void;
 }
 
 export default function ProductGrid({ products, onProductClick }: ProductGridProps) {
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+
   if (products.length === 0) {
     return (
       <div className="py-20 text-center">
@@ -18,6 +20,14 @@ export default function ProductGrid({ products, onProductClick }: ProductGridPro
       </div>
     );
   }
+
+  const handleProductClick = (product: any) => {
+    if (onProductClick) {
+      onProductClick(product);
+    } else {
+      setSelectedProduct(product);
+    }
+  };
 
   return (
     <section className="py-12 bg-gray-50">
@@ -36,7 +46,7 @@ export default function ProductGrid({ products, onProductClick }: ProductGridPro
             <ProductCard 
               key={product.id} 
               product={product} 
-              onProductClick={onProductClick}
+              onProductClick={handleProductClick}
             />
           ))}
         </div>

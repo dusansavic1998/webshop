@@ -5,8 +5,8 @@ import { Product } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 
 interface ProductCardProps {
-  product: Product;
-  onProductClick: (product: Product) => void;
+  product: any; // Can be from API or local
+  onProductClick: (product: any) => void;
 }
 
 export default function ProductCard({ product, onProductClick }: ProductCardProps) {
@@ -14,34 +14,26 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
 
-  const displayPrice = product.salePrice || product.price;
-  const hasDiscount = product.salePrice && product.salePrice < product.price;
+  // Handle both synced and mock data formats
+  const displayPrice = product.salePrice || product.price || 0;
+  const originalPrice = product.price && product.salePrice ? product.price : null;
+  const hasDiscount = originalPrice && originalPrice > displayPrice;
   const discountPercent = hasDiscount
-    ? Math.round(((product.price - product.salePrice!) / product.price) * 100)
+    ? Math.round(((originalPrice - displayPrice) / originalPrice) * 100)
     : 0;
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'plosce': return '⬜ Betonske ploče';
-      case 'kocke': return '🧱 Kocke';
-      case 'mobilijar': return '🪑 Mobilijar';
-      case 'dekorativni': return '🏛️ Dekorativno';
-      default: return category;
-    }
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      'plosce': '⬜ Betonske ploče',
+      'kocke': '🧱 Kocke',
+      'mobilijar': '🪑 Mobilijar',
+      'dekorativni': '🏛️ Dekorativno',
+      'default': '📦 Proizvod',
+    };
+    return labels[category] || labels['default'];
   };
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <svg
-        key={i}
-        className={`w-4 h-4 ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-        fill="currentColor"
-        viewBox="0 0 20 20"
-      >
-        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-      </svg>
-    ));
-  };
+  const isInStock = product.inStock !== false;
 
   return (
     <div
@@ -53,7 +45,7 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         <img
-          src={product.image}
+          src={product.image || product.images?.[0] || '/placeholder.jpg'}
           alt={product.name}
           className={`w-full h-full object-cover transition-transform duration-500 ${
             isHovered ? 'scale-110' : 'scale-100'
@@ -62,7 +54,7 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
 
         {/* Category Tag */}
         <div className="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700">
-          {getCategoryIcon(product.category)}
+          {getCategoryLabel(product.category?.toString())}
         </div>
 
         {/* Wishlist Button */}
@@ -120,9 +112,6 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
 
       {/* Product Info */}
       <div className="p-4 space-y-3">
-        {/* Rating */}
-        <div className="flex items-center gap-1">{renderStars(product.rating)}</div>
-
         {/* Title */}
         <h3 className="font-semibold text-[#1a1a2e] line-clamp-2 min-h-[3rem]">
           {product.name}
@@ -135,7 +124,7 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
           </span>
           {hasDiscount && (
             <span className="text-sm text-gray-400 line-through">
-              €{product.price.toFixed(2)}
+              €{originalPrice.toFixed(2)}
             </span>
           )}
         </div>
@@ -144,11 +133,11 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
         <div className="flex items-center gap-2">
           <span
             className={`w-2 h-2 rounded-full ${
-              product.inStock ? 'bg-green-500' : 'bg-red-500'
+              isInStock ? 'bg-green-500' : 'bg-red-500'
             }`}
           ></span>
           <span className="text-sm text-gray-500">
-            {product.inStock ? 'Na stanju' : 'Nije dostupno'}
+            {isInStock ? 'Na stanju' : 'Nije dostupno'}
           </span>
         </div>
       </div>

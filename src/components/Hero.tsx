@@ -1,19 +1,70 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSync, useCompany } from '@/lib/api/SyncContext';
 
 export default function Hero() {
+  const { company, isSynced, isSyncing, syncData, lastSync } = useSync();
   const [activeSlide, setActiveSlide] = useState(0);
+
+  // If not synced, show sync prompt
+  if (!isSynced) {
+    return (
+      <section className="relative h-[85vh] min-h-[600px] mt-16 md:mt-20 flex items-center justify-center bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+        <div className="text-center px-4">
+          <div className="w-24 h-24 bg-[#e94560] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-[#e94560]/30">
+            <span className="text-white font-bold text-4xl">B</span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Dobrodošli u BePro
+          </h1>
+          
+          <p className="text-xl text-gray-300 mb-8 max-w-lg mx-auto">
+            Da biste započeli, potrebno je sinkronizirati podatke sa vašim poslovnim sistemom.
+          </p>
+
+          <button
+            onClick={syncData}
+            disabled={isSyncing}
+            className={`px-8 py-4 font-semibold rounded-full transition-all transform hover:scale-105 ${
+              isSyncing
+                ? 'bg-gray-500 cursor-not-allowed'
+                : 'bg-[#e94560] hover:bg-[#d63d56] shadow-lg shadow-[#e94560]/30'
+            } text-white`}
+          >
+            {isSyncing ? (
+              <span className="flex items-center gap-3">
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Sinkronizacija u toku...
+              </span>
+            ) : (
+              '🔄 Započni sinkronizaciju'
+            )}
+          </button>
+
+          <p className="text-gray-400 text-sm mt-4">
+            Podaci će biti preuzeti sa vašeg InfosAPI sistema
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  const companyName = company?.name || 'BePro';
+  const companyDesc = company?.description || 'Betonski proizvodi vrhunskog kvaliteta';
 
   const slides = [
     {
       id: 1,
-      badge: 'Više od 38 godina iskustva',
-      title: 'Betonski proizvodi vrhunskog kvaliteta',
-      description: 'Preko 500 različitih proizvoda za uređenje vašeg prostora. Kvaliteta koja traje generacijama.',
+      badge: lastSync ? `Zadnja sinkronizacija: ${new Date(lastSync).toLocaleDateString('bs-BA')}` : 'Više od 38 godina iskustva',
+      title: `${companyName} - Betonski proizvodi`,
+      description: companyDesc,
       cta: 'Pogledaj ponudu',
       ctaSecondary: 'Kontaktirajte nas',
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop',
     },
     {
       id: 2,
@@ -22,7 +73,6 @@ export default function Hero() {
       description: 'Od betonskih ploča do kocki, fontana i vrtnog mobilijara - sve na jednom mjestu.',
       cta: 'Saznajte više',
       ctaSecondary: 'Katalozi',
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=800&h=600&fit=crop',
     },
     {
       id: 3,
@@ -31,7 +81,6 @@ export default function Hero() {
       description: 'Fokusirani smo na funkcionalna, estetski usklađena i ekološki prihvatljiva rješenja.',
       cta: 'Naši proizvodi',
       ctaSecondary: 'Reference',
-      image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=800&h=600&fit=crop',
     },
   ];
 
@@ -48,15 +97,7 @@ export default function Hero() {
     <section className="relative h-[85vh] min-h-[600px] mt-16 md:mt-20 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-[#1a1a2e]">
-        {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a2e] via-[#1a1a2e]/95 to-[#1a1a2e]/80 z-10" />
-        
-        {/* Background image */}
-        <img
-          src={currentSlide.image}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
-        />
       </div>
 
       {/* Content */}
@@ -70,7 +111,7 @@ export default function Hero() {
                 <span className="text-white font-bold text-2xl">B</span>
               </div>
               <div>
-                <span className="text-2xl font-bold">BePro</span>
+                <span className="text-2xl font-bold">{companyName}</span>
                 <p className="text-gray-400 text-sm">Betonski proizvodi</p>
               </div>
             </div>
@@ -101,38 +142,30 @@ export default function Hero() {
               </button>
             </div>
 
-            {/* Stats */}
-            <div className="flex gap-8 pt-4">
-              <div>
-                <div className="text-3xl font-bold text-[#e94560]">38+</div>
-                <div className="text-gray-400 text-sm">Godina iskustva</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#e94560]">500+</div>
-                <div className="text-gray-400 text-sm">Proizvoda</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#e94560]">1000+</div>
-                <div className="text-gray-400 text-sm">Projekata</div>
-              </div>
+            {/* Sync Status */}
+            <div className="flex items-center gap-4 pt-2">
+              <span className="text-green-400 text-sm">✓ Podaci sinkronizirani</span>
+              <button 
+                onClick={syncData}
+                className="text-gray-400 hover:text-white text-sm underline"
+              >
+                Osvježi
+              </button>
             </div>
           </div>
 
           {/* Right Side - Visual */}
           <div className="hidden lg:block relative">
             <div className="relative w-full aspect-square max-w-lg mx-auto">
-              {/* Decorative elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#e94560]/20 rounded-full blur-3xl"></div>
               <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-purple-500/20 rounded-full blur-3xl"></div>
               
-              {/* Card showcase */}
               <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
                 <div className="space-y-6">
-                  {/* Feature items */}
                   {[
-                    { icon: '⬜', title: 'Betonske ploče', desc: 'Premium i Budget line' },
-                    { icon: '🧱', title: 'Kocke & Pločnici', desc: 'Za dvorišta i staze' },
-                    { icon: '🏛️', title: 'Dekorativni elementi', desc: 'Zidovi, fontane, figure' },
+                    { icon: '📦', title: 'Proizvodi', desc: `${useArticles?.()?.length || 0} artikala` },
+                    { icon: '📂', title: 'Kategorije', desc: `${useCategories?.()?.length || 0} grupa` },
+                    { icon: '🏢', title: 'Kompanija', desc: companyName },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-[#e94560]/20 rounded-xl flex items-center justify-center text-2xl">
@@ -163,26 +196,17 @@ export default function Hero() {
           />
         ))}
       </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 right-8 z-20 animate-bounce hidden md:block">
-        <div className="flex flex-col items-center gap-2 text-white/50">
-          <span className="text-xs writing-vertical">Scroll</span>
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 14l-7 7m0 0l-7-7m7 7V3"
-            />
-          </svg>
-        </div>
-      </div>
     </section>
   );
+}
+
+// Custom hooks for use in component
+function useArticles() {
+  const { articles } = useSync();
+  return articles;
+}
+
+function useCategories() {
+  const { categories } = useSync();
+  return categories;
 }
