@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
 export const metadata: Metadata = {
-  title: "ModernShop | Online Trgovina",
-  description: "Premium online trgovina sa najboljim proizvodima",
-  keywords: ["webshop", "online shopping", "electronics", "clothing"],
+  title: "Apetitio | Online Trgovina",
+  description: "Vaša online trgovina - najbolje cijene i kvalitet",
 };
 
 export default function RootLayout({
@@ -21,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hr">
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         {children}
       </body>
     </html>
