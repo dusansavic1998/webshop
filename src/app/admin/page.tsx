@@ -23,9 +23,9 @@ export default function AdminDashboard() {
   ];
 
   const recentOrders = [
-    { id: '#ORD-001', customer: 'John Doe', product: 'Premium ploče', amount: '€450', status: 'completed' },
-    { id: '#ORD-002', customer: 'Jane Smith', product: 'Kocke', amount: '€280', status: 'pending' },
-    { id: '#ORD-003', customer: 'Mike Johnson', product: 'Mobilijar', amount: '€1,200', status: 'completed' },
+    { id: '#ORD-001', customer: 'John Doe', product: 'Premium ploče', amount: '{450', status: 'completed' },
+    { id: '#ORD-002', customer: 'Jane Smith', product: 'Kocke', amount: '{280', status: 'pending' },
+    { id: '#ORD-003', customer: 'Mike Johnson', product: 'Mobilijar', amount: '{1,200', status: 'completed' },
   ];
 
   return (

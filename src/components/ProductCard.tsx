@@ -120,11 +120,11 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-[#1a1a2e]">
-            €{displayPrice.toFixed(2)}
+            {{displayPrice.toFixed(2)}
           </span>
           {hasDiscount && (
             <span className="text-sm text-gray-400 line-through">
-              €{originalPrice.toFixed(2)}
+              {{originalPrice.toFixed(2)}
             </span>
           )}
         </div>

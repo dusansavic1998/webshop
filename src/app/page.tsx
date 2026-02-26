@@ -212,7 +212,7 @@ function ProductsSection() {
                   </h3>
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-bold text-[#0e7c86]">
-                      €{price.toFixed(2)}
+                      KM{price.toFixed(2)}
                     </span>
                   </div>
                 </div>
