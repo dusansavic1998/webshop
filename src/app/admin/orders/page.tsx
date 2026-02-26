@@ -83,7 +83,7 @@ export default function OrdersManagement() {
                   <td className="px-6 py-4 text-sm font-medium text-[#1a1a2e]">{order.orderId}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{order.customer}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{order.product}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-[#1a1a2e]">{{order.amount}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-[#1a1a2e]">KM{order.amount}</td>
                   <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                       {getStatusLabel(order.status)}

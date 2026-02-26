@@ -638,7 +638,7 @@ export default function ProductsManagement() {
                     <h3 className="font-semibold text-[#1a1a2e] line-clamp-1">{product.name}</h3>
                     <p className="text-gray-500 text-sm line-clamp-1">{product.categoryName}</p>
                     <div className="flex items-center justify-between mt-3">
-                      <span className="text-xl font-bold text-[#e94560]">{{product.price.toFixed(2)}</span>
+                      <span className="text-xl font-bold text-[#e94560]">KM{product.price.toFixed(2)}</span>
                       <button 
                         onClick={() => {
                           setEditingProduct(product);

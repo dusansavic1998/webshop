@@ -65,7 +65,7 @@ export default function CustomersManagement() {
                   <td className="px-6 py-4 text-sm text-gray-600">{customer.email}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{customer.phone}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{customer.orders}</td>
-                  <td className="px-6 py-4 text-sm font-medium text-[#e94560]">{{customer.totalSpent}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-[#e94560]">KM{customer.totalSpent}</td>
                   <td className="px-6 py-4 text-right">
                     <button className="text-blue-600 hover:text-blue-800 text-sm">Detalji</button>
                   </td>
