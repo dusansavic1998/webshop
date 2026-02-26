@@ -38,8 +38,8 @@ export const products: Product[] = [
   },
   {
     id: 2,
-    name: 'Budget Line Betonske Ploče',
-    description: 'Budget Line betonske ploče su ploče bez završne kvarcne obrade, zbog čega površina ostaje prirodnija i sirovija.',
+    name: 'Sancha Line Betonske Ploče',
+    description: 'Sancha Line betonske ploče su ploče bez završne kvarcne obrade, zbog čega površina ostaje prirodnija i sirovija.',
     price: 28.99,
     category: 'plosce',
     image: 'https://images.unsplash.com/photo-1598522325074-042db73aa4e6?w=400&h=400&fit=crop',
